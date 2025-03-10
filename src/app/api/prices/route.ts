@@ -80,11 +80,10 @@ export async function GET(request: Request) {
 
     exchanges.forEach((exchange) => {
       prices[exchange] = {}
-
       currencies.forEach((currency) => {
-        if (mockPrices[exchange]?.[currency]) {
+        if (mockPrices[exchange as keyof typeof mockPrices]?.[currency as keyof (typeof mockPrices)[keyof typeof mockPrices]]) {
           // Add some random variation to make the data more realistic
-          const basePrice = mockPrices[exchange][currency]
+          const basePrice = mockPrices[exchange as keyof typeof mockPrices][currency as keyof (typeof mockPrices)[keyof typeof mockPrices]]
           const variation = Math.random() * 0.01 - 0.005 // ±0.5%
           prices[exchange][currency] = basePrice * (1 + variation)
         }
@@ -92,9 +91,11 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json({ prices })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error fetching prices:", error)
-    return NextResponse.json({ error: "Failed to fetch prices", message: error.message }, { status: 500 })
+    if (error instanceof Error) {
+      return NextResponse.json({ error: "Failed to fetch prices", message: error.message }, { status: 500 })
+    }
+    return NextResponse.json({ error: "Failed to fetch prices" }, { status: 500 })
   }
 }
-

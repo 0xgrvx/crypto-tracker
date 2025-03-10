@@ -15,7 +15,7 @@ export function PriceTracker() {
   const { selectedExchanges } = useExchanges()
   const { selectedCurrencies } = useCurrencies()
   const { refreshInterval } = useRefreshInterval()
-  const [prices, setPrices] = useState<PriceData>({})
+  const [prices, setPrices] = useState<Record<string, Record<string, number>>>({})
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState<"table" | "chart">("table")
 
